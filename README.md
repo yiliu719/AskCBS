@@ -28,10 +28,10 @@ confirmation.
 Question
    │
    ▼
-System prompt  ──  both knowledge files, in full (~9k tokens, cached)
+System prompt  ──  both knowledge files, in full (~9k tokens)
    │
    ▼
-Claude Sonnet  ──  answers only from the provided documents
+Gemini 3.5 Flash-Lite  ──  answers only from the provided documents
    │
    ▼
 Streamed answer  +  question logged to questions.csv
@@ -54,7 +54,7 @@ AskCBS/
 ├── requirements.txt
 ├── askcbs/
 │   ├── knowledge.py            # Loads and assembles the corpus
-│   ├── llm.py                  # System prompt + Claude API call
+│   ├── llm.py                  # System prompt + Gemini API call
 │   └── logging_.py             # Logs questions and flags coverage gaps
 ├── knowledge/
 │   ├── campus_facts.md
@@ -72,7 +72,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-# add your Anthropic API key to that file
+# add your Gemini API key (free at aistudio.google.com/apikey) to that file
 
 streamlit run app.py
 ```
@@ -84,7 +84,7 @@ streamlit run app.py
    `app.py` on `main`.
 3. Under **Settings → Secrets**, add:
    ```toml
-   ANTHROPIC_API_KEY = "sk-ant-..."
+   GEMINI_API_KEY = "your-gemini-api-key"
    ```
    Without this the app starts but every question fails.
 
@@ -109,6 +109,9 @@ restart or redeploy. That's fine for an early read on usage. For durable logs, r
 - The ExBo Survival Guide is student-written and not an official CBS document.
 - Dates and contacts shift during the year; confirm anything time-sensitive.
 - No CMC people directory — for Advisors, Coaches, Fellows, or EIRs, use 12twenty.
+- Runs on Gemini's free tier; under heavy use it may ask you to try again in a minute.
+- On the free tier, Google may use the questions you ask to improve its products. Don't
+  include anything personal or confidential.
 - Not a substitute for the CMC, Peer Advisors, or the Office of Student Affairs.
 
 ## License

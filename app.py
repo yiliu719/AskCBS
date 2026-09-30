@@ -89,6 +89,11 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
+# Soft per-session cap to stay inside Gemini's free-tier rate limits. A refresh starts a
+# new session; that's acceptable for a free tool.
+SESSION_QUESTION_LIMIT = 20
+LIMIT_MESSAGE = "You've hit the AskCBS limit for this session. Refresh later to ask more."
+
 STARTERS = [
     "Where are the microwaves on campus?",
     "How do I get between Manhattanville and Morningside at night?",
@@ -98,6 +103,9 @@ STARTERS = [
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+# Tracked separately from messages so "Clear conversation" doesn't reset the cap.
+if "questions_asked" not in st.session_state:
+    st.session_state.questions_asked = 0
 
 # Suggested questions, shown only on an empty conversation.
 if not st.session_state.messages:
@@ -121,20 +129,27 @@ if question:
     with st.chat_message("user"):
         st.markdown(question)
 
+    over_limit = st.session_state.questions_asked >= SESSION_QUESTION_LIMIT
     with st.chat_message("assistant"):
-        try:
-            answer = st.write_stream(
-                stream_answer(get_system_prompt(), st.session_state.messages)
-            )
-        except Exception as error:  # noqa: BLE001 -- surface any API failure to the user
-            answer = (
-                "That request didn't go through. Try again in a moment, and if it "
-                f"keeps failing let whoever runs this know.\n\n`{error}`"
-            )
+        if over_limit:
+            answer = LIMIT_MESSAGE
             st.markdown(answer)
+        else:
+            st.session_state.questions_asked += 1
+            try:
+                answer = st.write_stream(
+                    stream_answer(get_system_prompt(), st.session_state.messages)
+                )
+            except Exception as error:  # noqa: BLE001 -- surface any API failure to the user
+                answer = (
+                    "That request didn't go through. Try again in a moment, and if it "
+                    f"keeps failing let whoever runs this know.\n\n`{error}`"
+                )
+                st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
-    log_question(question, answer)
+    if not over_limit:
+        log_question(question, answer)
 
 st.markdown(
     '<p class="askcbs-note">AskCBS answers only from the guides above. It will '

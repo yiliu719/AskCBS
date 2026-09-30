@@ -16,9 +16,9 @@ free tier, deployable in days.
 
 - **Language:** Python 3.11+
 - **Frontend:** Streamlit
-- **Model:** Claude Sonnet (`claude-sonnet-4-6`) via the Anthropic API
+- **Model:** Gemini 3.5 Flash-Lite (`gemini-3.5-flash-lite`) via the Gemini API, free tier
 - **Deployment:** Streamlit Community Cloud
-- **Key libraries:** `streamlit`, `anthropic`
+- **Key libraries:** `streamlit`, `google-genai`
 
 ## Project structure
 
@@ -32,7 +32,7 @@ AskCBS/
 ├── askcbs/
 │   ├── __init__.py
 │   ├── knowledge.py        # Loads and assembles the corpus
-│   ├── llm.py              # System prompt + Claude API call
+│   ├── llm.py              # System prompt + Gemini API call
 │   └── logging_.py         # Question logging, coverage gap detection
 ├── knowledge/
 │   ├── campus_facts.md     # ExBo Survival Guide: campus + NYC
@@ -54,8 +54,11 @@ or a chunking step unless the corpus grows past roughly 40,000 words.**
 `build_corpus()` returns a single string; swapping it for `retrieve(query)` would be the
 only change needed upstream.
 
-The system prompt is marked with `cache_control: ephemeral` since it's identical on every
-request. Keep that when editing `llm.py`.
+The system prompt is passed as Gemini's `system_instruction` and is identical on every
+request. The free tier has no per-token bill, so there's no explicit caching; the
+constraint that matters is the free-tier rate limit. `stream_answer()` catches a 429 and
+yields a friendly "AskCBS is busy" message instead of raising. Keep that when editing
+`llm.py`.
 
 ## The system prompt is the most important file
 
@@ -105,11 +108,21 @@ streamlit run app.py
 
 ## Deployment
 
-Streamlit Community Cloud, pointed at `app.py` on `main`. `ANTHROPIC_API_KEY` must be set
+Streamlit Community Cloud, pointed at `app.py` on `main`. `GEMINI_API_KEY` must be set
 under Settings → Secrets or every question fails at runtime (the app itself still boots).
 
 Consider a GitHub Actions keep-alive workflow pinging the app every 10 minutes to prevent
 Community Cloud from sleeping it — same pattern used in FloodBeta.
+
+## Cost guardrail
+
+This project must run on Gemini's free tier only.
+
+- The Google Cloud project behind `GEMINI_API_KEY` must never have billing enabled.
+- Never suggest enabling billing to raise rate limits.
+- If rate limits become a problem, the options are a smaller model, a lower
+  `SESSION_QUESTION_LIMIT` in `app.py`, or switching providers. That's Yi's call, not
+  something to change unprompted.
 
 ## Scope discipline
 
