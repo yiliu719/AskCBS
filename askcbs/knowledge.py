@@ -63,11 +63,3 @@ def build_corpus(knowledge_dir: Path = KNOWLEDGE_DIR) -> str:
             f"</document>"
         )
     return "\n\n".join(parts)
-
-
-def corpus_stats(knowledge_dir: Path = KNOWLEDGE_DIR) -> dict[str, int]:
-    """Word count per source, for the sidebar."""
-    return {
-        source.label: len(text.split())
-        for source, text in load_sources(knowledge_dir)
-    }

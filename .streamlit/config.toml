@@ -1,0 +1,15 @@
+# CBS navy on a warm off-white page, white surfaces for the sidebar and inputs.
+[theme]
+base = "light"
+primaryColor = "#1B3A5C"
+backgroundColor = "#FAF8F4"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1F2A36"
+linkColor = "#1B3A5C"
+borderColor = "#E6E1D8"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap, sans-serif"
+baseRadius = "0.6rem"
+showSidebarBorder = true
+
+[client]
+toolbarMode = "minimal"

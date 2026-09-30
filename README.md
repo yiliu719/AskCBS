@@ -16,7 +16,7 @@ AskCBS reads two knowledge files and answers only from them:
 | Source | Covers |
 |---|---|
 | `knowledge/campus_facts.md` | Buildings and floors, microwave locations, CBS hardware, system logins, traditions, the evening shuttle, subway, housing, groceries, gym, health services |
-| `knowledge/recruiting_clubs.md` | Full club directory plus recruiting timelines and advice from 24 professional clubs |
+| `knowledge/recruiting_clubs.md` | Full club directory (including 32 professional clubs) plus recruiting playbooks for 23 industries and functions |
 
 Both come from the student-written ExBo Survival Guide (Fall 2026), which is not an
 official CBS document. The app says so and flags time-sensitive details for
